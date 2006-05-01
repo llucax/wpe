@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Copyleft 2006 - Leandro Lucarella <luca at llucax.com.ar>
+# This script is under the BOLA license, please see the LICENSE file.
+
 # Must edit
 ###########
 # Wireless interface
