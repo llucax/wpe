@@ -1,0 +1,66 @@
+#!/bin/sh
+
+# Must edit
+###########
+# Wireless interface
+IFACE="wlan0"
+# Base key used to compute the actual key
+KEY_BASE="My WEP is better than yours"
+# Security mode (open/restricted)
+SECURITY_MODE="open"
+# Comment this if you don't want to rotate the channel
+ROTATE_CHANNEL="on"
+# Channels supported by the wireless interface
+MAX_CHANNEL=11
+# Uncomment if you want the script to work only if you're on a specific essid
+#ESSID="myessid"
+# Uncomment if your wireless interface need the commit command
+#COMMIT="commit"
+
+# May edit
+##########
+# The format has to be in date(1) format, and probably has to have a relation
+# with the frequency the script is executed. The default value is useful for a
+# 1/2 day frequency (rotation every 12 hs). date(1) is executed with C locale so
+# %p can be used.
+# A good crontab line for this is:
+# 0 0,12 * * * /path/to/script
+KEY_FORMAT="$KEY_BASE%D%p"
+# Key size, 1-5 for 64bit encryption, 6-13 for 128bit encryption
+KEY_SIZE=13
+# Hash command/algorithm used to compute the actual key
+HASH_PROG="sha1sum"
+
+# Do not touch
+##############
+# Unless you know what you're doing, and in that case, send me the patch ;)
+
+export LANG=C
+
+# Check if they are using our essid
+if [ -n "$ESSID" ]
+then
+  curr_essid=`iwconfig $IFACE | grep ESSID | sed 's/.*ESSID:"\([^"]\+\)".*/\1/'`
+  if [ "$curr_essid" != "$ESSID" ]
+  then
+    exit 0
+  fi
+fi
+
+# Compute the new key
+str=`date +"$KEY_FORMAT"`
+size=$(($KEY_SIZE * 2))
+key=`echo "$str" | $HASH_PROG | cut -c-$size`
+
+# Compute the new channel
+if [ -n "$ROTATE_CHANNEL" ]
+then
+  chan=`echo $key | tr abcdef 847502 | cut -c-6`
+  chan=$(($chan % $MAX_CHANNEL + 1))
+  channel="channel $chan"
+fi
+
+# Commit changes
+/sbin/iwconfig $IFACE key $SECURITY_MODE $key $channel $COMMIT
+
+# vim: set et sw=2 sts=2 :
