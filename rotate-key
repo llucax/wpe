@@ -43,7 +43,8 @@ export LANG=C
 # Check if they are using our essid
 if [ -n "$ESSID" ]
 then
-  curr_essid=`iwconfig $IFACE | grep ESSID | sed 's/.*ESSID:"\([^"]\+\)".*/\1/'`
+  curr_essid=`/sbin/iwconfig $IFACE | grep ESSID \
+      | sed 's/.*ESSID:"\([^"]\+\)".*/\1/'`
   if [ "$curr_essid" != "$ESSID" ]
   then
     exit 0
