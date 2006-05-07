@@ -59,7 +59,7 @@ key=`echo "$str" | $HASH_PROG | cut -c-$size`
 # Compute the new channel
 if [ -n "$ROTATE_CHANNEL" ]
 then
-  chan=`echo $key | tr abcdef 847502 | cut -c-6`
+  chan=1`echo $key | tr abcdef 847502 | cut -c-6`
   chan=$(($chan % $MAX_CHANNEL + 1))
   channel="channel $chan"
 fi
