@@ -40,6 +40,12 @@ HASH_PROG="sha1sum"
 
 export LANG=C
 
+# Check if interface exists
+if ! /sbin/ifconfig "$IFACE" > /dev/null 2>&1
+then
+  exit 0
+fi
+
 # Check if they are using our essid
 if [ -n "$ESSID" ]
 then
