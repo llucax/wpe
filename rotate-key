@@ -33,6 +33,10 @@ KEY_FORMAT="$KEY_BASE%D%p"
 KEY_SIZE=13
 # Hash command/algorithm used to compute the actual key
 HASH_PROG="sha1sum"
+# ifconfig path
+IFCONFIG="/sbin/ifconfig"
+# iwconfig path
+IWCONFIG="/sbin/iwconfig"
 
 # Do not touch
 ##############
@@ -41,7 +45,7 @@ HASH_PROG="sha1sum"
 export LANG=C
 
 # Check if interface exists
-if ! /sbin/ifconfig "$IFACE" > /dev/null 2>&1
+if ! $IFCONFIG "$IFACE" > /dev/null 2>&1
 then
   exit 0
 fi
@@ -49,7 +53,7 @@ fi
 # Check if they are using our essid
 if [ -n "$ESSID" ]
 then
-  curr_essid=`/sbin/iwconfig $IFACE | grep ESSID \
+  curr_essid=`$IWCONFIG $IFACE | grep ESSID \
       | sed 's/.*ESSID:"\([^"]\+\)".*/\1/'`
   if [ "$curr_essid" != "$ESSID" ]
   then
@@ -71,6 +75,6 @@ then
 fi
 
 # Commit changes
-/sbin/iwconfig $IFACE key $SECURITY_MODE $key $channel $COMMIT
+$IWCONFIG $IFACE key $SECURITY_MODE $key $channel $COMMIT
 
 # vim: set et sw=2 sts=2 :
